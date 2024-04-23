@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# Check if a ConfigMap with the same name already exists
+if oc get configmap aws-credentials -n openshift-storage &> /dev/null; then
+  read -p "ConfigMap 'aws-credentials' already exists. Do you want to override it? (y/n): " OVERRIDE_CONFIGMAP
+  if [ "$OVERRIDE_CONFIGMAP" != "y" ]; then
+    echo "Aborting."
+    exit 1
+  else
+    # Backup the existing ConfigMap
+    TIMESTAMP=$(date '+%Y%m%d%H%M%S')
+    oc get configmap aws-credentials -n openshift-storage -o yaml > "aws-credentials-$TIMESTAMP.yaml"
+    echo "Existing ConfigMap backed up as aws-credentials-$TIMESTAMP.yaml"
+    oc delete configmap aws-credentials -n openshift-storage
+  fi
+fi
+
 # Prompt the user to insert the AWS access key ID
 read -p "Enter AWS Access Key ID: " AWS_ACCESS_KEY_ID
 
