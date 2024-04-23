@@ -16,10 +16,10 @@ if oc get configmap aws-credentials -n openshift-storage &> /dev/null; then
 fi
 
 # Prompt the user to insert the AWS access key ID
-read -p "Enter AWS Access Key ID: " AWS_ACCESS_KEY_ID
+read -p "Enter Access Key ID: " AWS_ACCESS_KEY_ID
 
 # Prompt the user to insert the AWS secret access key
-read -p "Enter AWS Secret Access Key: " AWS_SECRET_ACCESS_KEY
+read -p "Enter Secret Access Key: " AWS_SECRET_ACCESS_KEY
 
 # Create a ConfigMap YAML file
 cat <<EOF > aws-credentials.yaml
@@ -75,3 +75,6 @@ echo "Creating Pod..."
 oc apply -f awscli-pod.yaml
 
 echo "Deployment completed."
+echo "use 'aws s3 ls --endpoint={service_name}:port' to list buckets"
+echo "use 'aws s3 ls --endpoint=http://{service_name}:port s3://{bucket_name}' to list bucket objects"
+echo "example 'aws s3 ls --endpoint=http://s3' to list buckets"
