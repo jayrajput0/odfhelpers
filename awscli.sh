@@ -43,7 +43,7 @@ spec:
       type: RuntimeDefault
   containers:
     - name: awscli
-      image: 'registry.redhat.io/amazon/aws-cli:latest'
+      image: 'docker.io/amazon/aws-cli:latest'
       command: ["sleep", "infinity"]
       envFrom:
         - configMapRef:
