@@ -11,14 +11,11 @@ if ! command -v jq &>/dev/null; then
 fi
 
 # Prompt user to choose an option
-echo
-echo
-echo "WARNING: This script works well with internal mode ODF deployments. External ceph clusters are usually connected to multiple ODF cluster therefore it may generate inaccurate results."
-echo
-echo
-echo "1. Calculate utilization of each CephFS PV"
-echo "2. Calculate utilization of ALL CephFS subvolumes"
-echo "3. Generate a list of stale subvolumes"
+
+echo -n "WARNING: This script works well with internal mode ODF deployments. External ceph clusters are usually connected to multiple ODF cluster therefore it may generate inaccurate results."
+echo -n "1. Calculate utilization of each CephFS PV"
+echo -n "2. Calculate utilization of ALL CephFS subvolumes"
+echo -n "3. Generate a list of stale subvolumes"
 read -p "Choose an option (1,2 or 3): " option
 
 
