@@ -1,0 +1,72 @@
+# cat awsinstall.sh 
+#!/bin/bash
+
+# Function to download tarball based on version input
+download_tarball() {
+    local version=$1
+    local url=""
+
+    if [[ $version == "latest" ]]; then
+        url="https://<url>/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-install-linux.tar.gz"
+    else
+        url="https://<url>/pub/openshift-v4/clients/ocp/$version/openshift-install-linux.tar.gz"
+    fi
+
+    wget "$url"
+}
+
+# Function to check if user has AWS access keys
+check_aws_keys() {
+    read -rp "Do you have AWS access key/secret key already? (Y/N): " aws_keys_response
+    if [[ $aws_keys_response != [Yy] ]]; then
+        echo "Please obtain AWS access key and secret key before starting the installation."
+        exit 1
+    fi
+}
+
+# Function to check if user has downloaded pull secret
+check_pull_secret() {
+    read -rp "Have you downloaded the PULL SECRET already? (Y/N): " pull_secret_response
+    if [[ $pull_secret_response != [Yy] ]]; then
+        echo "Please download the PULL SECRET from: https://console.redhat.com/openshift/install/platform-agnostic/user-provisioned"
+        exit 1
+    fi
+}
+
+# Main script
+
+# Check AWS access keys
+check_aws_keys
+
+# Check if user has downloaded pull secret
+check_pull_secret
+
+while true; do
+    # Create a new directory for each iteration
+    directory="openshift_$(date +"%Y%m%d_%H%M%S")"
+    mkdir -p "$directory"
+    cd "$directory" || exit
+
+    # Prompt user for version input
+    echo "Provide a version (e.g., latest, latest-4.13, latest-4.14, 4.14.5, 4.14.6, etc.):"
+    read -rp "Enter the version you want to install (default: latest): " version_input
+
+    # Set default value to "latest" if no input provided
+    version_input=${version_input:-latest}
+
+    # Download tarball based on version input
+    download_tarball "$version_input"
+
+    # Extract the tar file
+    tar -xvf "openshift-install-linux.tar.gz"
+
+    # Run the install script with specified options
+    ./openshift-install create cluster --dir="$(pwd)" --log-level=info
+
+    # Ask user if they want to continue installing
+    read -rp "Do you want to install again? (yes/no): " continue_install
+    if [[ $continue_install != "yes" ]]; then
+        break
+    fi
+done
+
